@@ -11,3 +11,6 @@ class Banger(models.Model):
     role = models.TextField(blank=True)
     certificate = models.FileField()
     certified_timestamp = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.title} ({self.artist})"
