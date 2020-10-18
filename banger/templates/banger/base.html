@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Neko Doesu Bangers</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body class="d-flex flex-column" style="min-height: 100vh">
+<nav class="navbar navbar-dark bg-dark mb-3">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'index' %}">Neko Desu Bangers</a>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'view_bangers' %}">Past bangers</a>
+            </li>
+        </ul>
+        {% if next_show %}
+            <span class="text-light">{{ next_show }}</span>
+        {% endif %}
+    </div>
+</nav>
+{% block content %}
+{% endblock %}
+<footer class="bg-dark text-light py-5 mt-3">
+    <div class="container">
+        <p>
+            A project by <a href="https://magicalcodewit.ch" class="govuk-footer__link">Q 🦄</a>
+        </p>
+        <iframe src="https://github.com/sponsors/TheEnbyperor/card" title="Sponsor TheEnbyperor"
+                style="border: 0;" width="100%" height="150"></iframe>
+        <img alt="Creative Commons License" style="border-width:0"
+             src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png">
+        <br>
+        All content is available under the
+        <a class="govuk-footer__link" rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+            Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where otherwise stated.
+    </div>
+</footer>
+</body>
+</html>

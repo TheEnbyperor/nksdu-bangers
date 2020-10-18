@@ -1,0 +1,127 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: bangers-django-static
+  namespace: nkdsu
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: bangers-django-media
+  namespace: nkdsu
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: bangers-django-conf
+  namespace: nkdsu
+data:
+  HOST: "nkdsu-bangers.magicalcodewit.ch"
+  DJANGO_SETTINGS_MODULE: nksdu_bangers.settings
+  EXTERNAL_URL: "https://nkdsu-bangers.magicalcodewit.ch"
+  DB_HOST: "cockroachdb"
+  DB_NAME: "nkdsu_bangers"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bangers-django
+  namespace: nkdsu
+  labels:
+    app: bangers
+    part: django
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bangers
+      part: django
+  template:
+    metadata:
+      annotations:
+        cni.projectcalico.org/ipv6pools: "[\"default-ipv6-ippool\"]"
+      labels:
+        app: bangers
+        part: django
+    spec:
+      volumes:
+        - name: static
+          persistentVolumeClaim:
+            claimName: bangers-django-static
+        - name: media
+          persistentVolumeClaim:
+            claimName: bangers-django-media
+      initContainers:
+        - name: django
+          image: theenbyperor/nkdsu-bangers-django:(version)
+          imagePullPolicy: Always
+          command: ["sh", "-c", "python3 manage.py collectstatic --noinput && python3 manage.py migrate"]
+          volumeMounts:
+            - mountPath: "/app/static/"
+              name: static
+            - mountPath: "/app/media/"
+              name: media
+          envFrom:
+            - configMapRef:
+                name: bangers-django-conf
+            - secretRef:
+                name: bangers-db-creds
+              prefix: "DB_"
+            - secretRef:
+                name: bangers-django-secret
+            - secretRef:
+                name: bangers-recaptcha
+              prefix: "RECAPTCHA_"
+      containers:
+        - name: gunicorn
+          image: theenbyperor/nkdsu-bangers-django:(version)
+          imagePullPolicy: Always
+          command: ["gunicorn", "-w", "8", "-b", "[::]:8000", "--forwarded-allow-ips", "*", "--access-logfile", "-", "--log-level=debug", "--timeout=90", "nkdsu_bangers.wsgi:application"]
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - mountPath: "/app/static/"
+              name: static
+            - mountPath: "/app/media/"
+              name: media
+          envFrom:
+            - configMapRef:
+                name: bangers-django-conf
+            - secretRef:
+                name: bangers-db-creds
+              prefix: "DB_"
+            - secretRef:
+                name: bangers-django-secret
+            - secretRef:
+                name: bangers-recaptcha
+              prefix: "RECAPTCHA_"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bangers-django
+  namespace: nkdsu
+  labels:
+    app: bangers
+    part: django
+spec:
+  selector:
+    app: bangers
+    part: django
+  ports:
+    - port: 8000
+      targetPort: 8000

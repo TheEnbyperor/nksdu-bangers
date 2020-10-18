@@ -1,0 +1,43 @@
+{% extends "banger/base.html" %}
+{% block content %}
+    <div class="container" style="flex-grow: 1">
+        <h1 class="display-4">Past bangers</h1>
+        <div class="card-columns">
+            {% for song in page_obj %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ song.title }}</h5>
+                        <p class="card-text">{{ song.role }}</p>
+                        <p class="card-text">{{ song.artist }}</p>
+                        <a href="{% url 'view_banger' song.id %}" class="btn btn-success btn-block">View certificate</a>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Certified {{ song.certified_timestamp }}</small>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <hr>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+            <li class="page-item active">
+                <a class="page-link" href="#">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</a>
+            </li>
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "banger/base.html" %}
+{% block content %}
+    <div class="container" style="flex-grow: 1">
+        <h1 class="display-4">This show's songs</h1>
+        <script>
+            var song_id = null;
+
+            function onSubmit() {
+                var form = document.getElementById("banger-form");
+                form.action = song_id;
+                form.submit();
+            }
+        </script>
+        {% if songs %}
+            <div class="card-columns">
+                {% for song in songs %}
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ song.title }}</h5>
+                            <p class="card-text">{{ song.role }}</p>
+                            <p class="card-text">{{ song.artist }}</p>
+                            {% if song.existing_banger %}
+                                <a href="{% url 'view_banger' song.existing_banger.id %}" class="btn btn-success btn-block">View certificate</a>
+                            {% else %}
+                                <button class="btn btn-primary btn-block"
+                                        onclick="recaptcha_callback_{{ forloop.counter0 }}(event)">
+                                    Make banger
+                                </button>
+                                <script>
+                                    function recaptcha_callback_{{ forloop.counter0 }}(e) {
+                                        e.preventDefault();
+                                        song_id = "{% url 'make_banger' song.id %}";
+                                        grecaptcha.execute();
+                                    }
+                                </script>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">Played {{ song.time }}</small>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <h2>Nothing played yet, check back later.</h2>
+        {% endif %}
+        <hr>
+        <h3>Go to another show</h3>
+        <form action="" method="get" class="text-center">
+            <label for="show">Show date: </label>
+            <input type="date" name="show" id="show" required>
+            <button type="submit" class="btn btn-primary">Go</button>
+        </form>
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        <form action="" method="post" id="banger-form">
+            {% csrf_token %}
+            <div class="g-recaptcha"
+                 data-sitekey="{{ site_key }}"
+                 data-callback="onSubmit"
+                 data-size="invisible">
+            </div>
+        </form>
+    </div>
+{% endblock %}
