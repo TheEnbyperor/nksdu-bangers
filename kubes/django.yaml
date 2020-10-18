@@ -31,9 +31,9 @@ metadata:
   namespace: nkdsu
 data:
   HOST: "nkdsu-bangers.magicalcodewit.ch"
-  DJANGO_SETTINGS_MODULE: nksdu_bangers.settings
+  DJANGO_SETTINGS_MODULE: nkdsu_banger.settings
   EXTERNAL_URL: "https://nkdsu-bangers.magicalcodewit.ch"
-  DB_HOST: "cockroachdb"
+  DB_HOST: "cockroachdb.default"
   DB_NAME: "nkdsu_bangers"
 ---
 apiVersion: apps/v1
@@ -90,7 +90,7 @@ spec:
         - name: gunicorn
           image: theenbyperor/nkdsu-bangers-django:(version)
           imagePullPolicy: Always
-          command: ["gunicorn", "-w", "8", "-b", "[::]:8000", "--forwarded-allow-ips", "*", "--access-logfile", "-", "--log-level=debug", "--timeout=90", "nkdsu_bangers.wsgi:application"]
+          command: ["gunicorn", "-w", "8", "-b", "[::]:8000", "--forwarded-allow-ips", "*", "--access-logfile", "-", "--log-level=debug", "--timeout=90", "nkdsu_banger.wsgi:application"]
           ports:
             - containerPort: 8000
           volumeMounts:
