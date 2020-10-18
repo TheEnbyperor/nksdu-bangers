@@ -1,6 +1,7 @@
 import PIL.ImageFont
 import PIL.ImageDraw
 import PIL.Image
+import unidecode
 from pathlib import Path
 import io
 
@@ -21,6 +22,10 @@ def draw_cert(title: str, artist: str, role: str):
     base_img = PIL.Image.open(BASE_DIR / "base.png")
     img = PIL.Image.new("RGBA", (base_img.width * subsample_scale, base_img.height * subsample_scale), (0, 0, 0, 0))
     draw = PIL.ImageDraw.Draw(img)
+
+    artist = unidecode.unidecode(artist)
+    title = unidecode.unidecode(title)
+    role = unidecode.unidecode(role)
 
     img_centre = img.width // 2
     draw_centered(img_centre, 245 * subsample_scale, draw, font_1, "On behalf of Neko Desu awarded to")

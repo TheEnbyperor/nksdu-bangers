@@ -5,3 +5,4 @@ python-dateutil
 psycopg2-binary
 gunicorn
 django-cockroachdb==3.1.*
+Unidecode
