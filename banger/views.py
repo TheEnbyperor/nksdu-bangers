@@ -90,6 +90,8 @@ def make_banger(request, nkdsu_id):
     )
     new_banger.save()
 
+    tasks.tweet_banger(new_banger.id)
+
     return redirect('view_banger', new_banger.id)
 
 

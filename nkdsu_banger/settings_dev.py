@@ -26,7 +26,7 @@ SECRET_KEY = 'to!25r1*_z=4$yzb&^ogg1s(cn2z=vqle$4wwj110r5xpmrt@d'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "172.24.213.234"]
 
 
 # Application definition
@@ -125,6 +125,14 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 with open(BASE_DIR / "secrets" / "recaptcha.json") as f:
     recaptcha_data = json.load(f)
+with open(BASE_DIR / "secrets" / "twitter.json") as f:
+    twitter_data = json.load(f)
 
-RECAPTCHA_SITE_KEY = ""
-RECAPTCHA_SECRET_KEY = ""
+RECAPTCHA_SITE_KEY = recaptcha_data["site_key"]
+RECAPTCHA_SECRET_KEY = recaptcha_data["secret_key"]
+
+TWITTER_CONSUMER_KEY = twitter_data["consumer_key"]
+TWITTER_CONSUMER_SECRET = twitter_data["consumer_secret"]
+TWITTER_ACCESS_TOKEN = twitter_data["access_token"]
+TWITTER_ACCESS_TOKEN_SECRET = twitter_data["access_token_secret"]
+

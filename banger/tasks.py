@@ -3,9 +3,17 @@ import PIL.ImageDraw
 import PIL.Image
 import unidecode
 from pathlib import Path
+from django.conf import settings
 import io
+import os
+import tweepy
+from . import models
 
 BASE_DIR = Path(__file__).resolve().parent
+
+twitter_auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
+twitter_auth.set_access_token(settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
+twitter_api = tweepy.API(twitter_auth)
 
 subsample_scale = 3
 font_1 = PIL.ImageFont.truetype(str(BASE_DIR / "fonts" / "PlayfairDisplay-BoldItalic.ttf"), 40 * subsample_scale)
@@ -40,3 +48,13 @@ def draw_cert(title: str, artist: str, role: str):
     base_img.save(img_b, format='PNG')
     img_b.seek(0)
     return img_b.getvalue()
+
+def tweet_banger(banger_id):
+    banger = models.Banger.objects.get(id=banger_id)
+
+    media_file = twitter_api.media_upload(banger.certificate.path)
+
+    twitter_api.update_status(
+        f"{banger.title} ({banger.role}) - {banger.artist} is a Certified Banger #NekoDesu",
+        media_ids=[media_file.media_id]
+    )
